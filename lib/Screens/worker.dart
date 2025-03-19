@@ -9,6 +9,7 @@ import 'package:camify_travel_app/model/workers/role_model.dart';
 import 'package:camify_travel_app/widgets/custom_textfield.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -300,6 +301,15 @@ class _WorkerScreenState extends State<WorkerScreen> {
               CustomTextfield(
                 hint: 'Work Name',
                 controller: _workNameController,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                ],
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Work Name cannot be empty';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 10),
               CustomTextfield(
