@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextfield extends StatelessWidget {
   final String? hint;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final List<TextInputFormatter>? inputFormatters;
   const CustomTextfield({
     super.key,
     this.hint,
     this.controller,
     this.keyboardType,
     this.validator,
+    this.inputFormatters,
   });
 
   @override
@@ -22,6 +25,7 @@ class CustomTextfield extends StatelessWidget {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
         hintText: hint,
       ),
+      inputFormatters: inputFormatters,
       validator: validator,
     );
   }

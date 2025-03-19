@@ -17,13 +17,13 @@ class WorkerFunctions {
   static Future<void> updateWorker(int index, Worker worker) async {
     final box = Hive.box<Worker>(WORKERS_BOX);
     await box.putAt(index, worker);
-    print('Worker updated at index $index: ${worker.name}'); // Debug
+    print('Worker updated at index $index: ${worker.name}');
   }
 
   static Future<void> deleteWorker(int index) async {
     final box = Hive.box<Worker>(WORKERS_BOX);
     await box.deleteAt(index);
-    print('Worker deleted at index $index, Total: ${box.length}'); // Debug
+    print('Worker deleted at index $index, Total: ${box.length}');
   }
 
   static List<Worker> getAllWorkers() {
@@ -34,16 +34,21 @@ class WorkerFunctions {
   // Manage work
   static Future<void> addmanagework(Manage work) async {
     final box = Hive.box<Manage>(Manage_Work);
-    print('Adding work to MANAGEBOX: ${work.name}'); // Debug
-    await box.add(work);
-    print('Work added, MANAGEBOX size: ${box.length}'); // Debug
+    print('Adding work to MANAGEBOX: ${work.name} with ${work.id}');
+    await box.put(work.id, work);
+    print('Work added, MANAGEBOX size: ${box.length}');
   }
 
   static Future<void> updatemanagework(int index, Manage work) async {
     final box = Hive.box<Manage>(Manage_Work);
-    print('Updating work at index $index: ${work.name}'); // Debug
+    print('Updating work at index $index: ${work.name}');
     await box.putAt(index, work);
-    print('Work updated, MANAGEBOX size: ${box.length}'); // Debug
+    print('Work updated, MANAGEBOX size: ${box.length}');
+  }
+
+  static Future<void> deletemanagework(String id) async {
+    final box = Hive.box<Manage>(Manage_Work);
+    await box.delete(id);
   }
 
   static List<Manage> getManageWork() {

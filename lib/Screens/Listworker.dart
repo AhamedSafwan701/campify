@@ -14,6 +14,9 @@ class WorkListScreen extends StatefulWidget {
 class _WorkListScreenState extends State<WorkListScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -24,6 +27,7 @@ class _WorkListScreenState extends State<WorkListScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -117,7 +121,7 @@ class _WorkListScreenState extends State<WorkListScreen>
                   id: work.id,
                   name: work.name,
                   description: work.description,
-                  status: 'Completed', // Update status
+                  status: 'Completed',
                   assignedWorkerIndices: work.assignedWorkerIndices,
                 );
                 await WorkerFunctions.updatemanagework(workIndex, updatedWork);
@@ -134,19 +138,81 @@ class _WorkListScreenState extends State<WorkListScreen>
     );
   }
 
+  void _deletemanagework(String workId, String workName) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return CustomAlertbox(
+          title: 'Delete Work',
+          content: Text('Are you sure you want to delete "$workName"?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await WorkerFunctions.deletemanagework(workId);
+                Navigator.of(dialogContext).pop();
+                setState(() {}); // Added for UI refresh
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('"$workName" deleted')));
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Work List',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: const Color.fromARGB(255, 182, 182, 128),
+        title:
+            _isSearching
+                ? TextField(
+                  controller: _searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search works...',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: Colors.black54),
+                  ),
+                  style: const TextStyle(color: Colors.black),
+                  autofocus: true,
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value.trim().toLowerCase();
+                    });
+                  },
+                )
+                : const Text(
+                  'Work List',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  _searchController.clear();
+                  _searchQuery = '';
+                }
+              });
+            },
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey,
+          unselectedLabelColor: const Color.fromARGB(255, 54, 52, 52),
           indicatorColor: Colors.black,
           tabs: const [Tab(text: 'Pending'), Tab(text: 'Completed')],
         ),
@@ -159,20 +225,38 @@ class _WorkListScreenState extends State<WorkListScreen>
               works.where((work) => work.status == 'Pending').toList();
           final completedWorks =
               works.where((work) => work.status == 'Completed').toList();
-          print(
-            'Total works: ${works.length}, Pending: ${pendingWorks.length}, Completed: ${completedWorks.length}',
-          );
+          final filteredPendingWorks =
+              _searchQuery.isEmpty
+                  ? pendingWorks
+                  : pendingWorks
+                      .where(
+                        (work) =>
+                            work.name.toLowerCase().contains(_searchQuery),
+                      )
+                      .toList();
+          final filteredCompletedWorks =
+              _searchQuery.isEmpty
+                  ? completedWorks
+                  : completedWorks
+                      .where(
+                        (work) =>
+                            work.name.toLowerCase().contains(_searchQuery),
+                      )
+                      .toList();
 
+          print(
+            'Total works: ${works.length}, Pending: ${filteredPendingWorks.length}, Completed: ${filteredCompletedWorks.length}',
+          );
           return TabBarView(
             controller: _tabController,
             children: [
               // Pending Tab
-              pendingWorks.isEmpty
+              filteredPendingWorks.isEmpty
                   ? const Center(child: Text('No pending works'))
                   : ListView.builder(
-                    itemCount: pendingWorks.length,
+                    itemCount: filteredPendingWorks.length,
                     itemBuilder: (context, index) {
-                      final work = pendingWorks[index];
+                      final work = filteredPendingWorks[index];
                       final allWorkers = WorkerFunctions.getAllWorkers();
                       final validAssignedWorkers = work.assignedWorkerIndices
                           .where((i) => i >= 0 && i < allWorkers.length)
@@ -199,9 +283,12 @@ class _WorkListScreenState extends State<WorkListScreen>
                                 color: Colors.green,
                               ),
                               onPressed:
-                                  () => _markAsCompleted(
-                                    works.indexOf(work),
-                                  ), // Mark as completed
+                                  () => _markAsCompleted(works.indexOf(work)),
+                            ),
+                            IconButton(
+                              onPressed:
+                                  () => _deletemanagework(work.id, work.name),
+                              icon: const Icon(Icons.delete, color: Colors.red),
                             ),
                           ],
                         ),
@@ -209,12 +296,12 @@ class _WorkListScreenState extends State<WorkListScreen>
                     },
                   ),
               // Completed Tab
-              completedWorks.isEmpty
+              filteredCompletedWorks.isEmpty
                   ? const Center(child: Text('No completed works'))
                   : ListView.builder(
-                    itemCount: completedWorks.length,
+                    itemCount: filteredCompletedWorks.length,
                     itemBuilder: (context, index) {
-                      final work = completedWorks[index];
+                      final work = filteredCompletedWorks[index];
                       final allWorkers = WorkerFunctions.getAllWorkers();
                       final validAssignedWorkers = work.assignedWorkerIndices
                           .where((i) => i >= 0 && i < allWorkers.length)
@@ -225,7 +312,7 @@ class _WorkListScreenState extends State<WorkListScreen>
                         subtitle: Text(
                           'Assigned: ${validAssignedWorkers.isEmpty ? "None" : validAssignedWorkers}',
                         ),
-                      ); // No buttons in Completed tab
+                      );
                     },
                   ),
             ],
