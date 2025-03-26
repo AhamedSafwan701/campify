@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
         children: [
           Expanded(
             child: Image.asset(
-              'assets/Screenshot 2025-02-21 192655.png',
+              'assets/Campify (1).png',
               width: 400,
               height: 500,
               fit: BoxFit.cover,
@@ -37,8 +37,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> gotoLoginscreen() async {
-    await Future.delayed(Duration(seconds: 3));
-    var box = Hive.box<User>("USERBOX");
+    await Future.delayed(Duration(seconds: 2));
+    var box = Hive.box<User>("USER_BOX");
     User? user = box.get("user");
     if (user?.islogged ?? false) {
       Navigator.of(

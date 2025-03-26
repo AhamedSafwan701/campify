@@ -3,7 +3,7 @@ import 'package:camify_travel_app/model/drop_add/package_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-const String PACKAGE_BOX = 'PACKAGEBOX';
+const String PACKAGE_BOX = "PACKAGE_BOX";
 ValueNotifier<List<Package>> packageNotifier = ValueNotifier([]);
 
 Future<void> addPackage(Package package) async {

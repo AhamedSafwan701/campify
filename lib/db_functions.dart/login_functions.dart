@@ -1,12 +1,9 @@
 import 'package:camify_travel_app/model/login/password_model.dart';
 import 'package:hive_flutter/adapters.dart';
 
-String USERBOX = 'USERBOX';
-final userbox = Hive.box<User>(USERBOX);
+const String USER_BOX = "USER_BOX";
+final userbox = Hive.box<User>(USER_BOX);
 
-// registerUSer(User acn) {
-//   userbox.put(acn.username, acn);
-// }
 Future<void> registerUser(User acn) async {
   acn.islogged = true;
   await userbox.put("user", acn);
@@ -17,7 +14,7 @@ User? getUser(String username) {
 }
 
 Future<void> logoutUser() async {
-  var box = await Hive.openBox<User>(USERBOX);
+  var box = await Hive.openBox<User>(USER_BOX);
   User? user = box.get('user');
   if (user != null) {
     user.islogged = false;

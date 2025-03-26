@@ -1,8 +1,8 @@
 import 'package:camify_travel_app/Screens/client.dart';
+import 'package:camify_travel_app/Screens/control.dart';
 import 'package:camify_travel_app/Screens/role.dart';
 import 'package:camify_travel_app/Screens/settings.dart';
 import 'package:camify_travel_app/Screens/worker.dart';
-import 'package:camify_travel_app/db_functions.dart/login_functions.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,11 +13,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   final List<Map<String, String>> locations = [
     {
       "placename": 'Kerala',
@@ -30,12 +25,42 @@ class _HomeScreenState extends State<HomeScreen> {
       'image': 'assets/pexels-vivek-chugh-157138-739987.jpg',
     },
   ];
+
+  // Controller for search input
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, String>> _filteredLocations = []; // Filtered list
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredLocations = locations; // Initially show all locations
+    _searchController.addListener(_filterLocations); // Listen to search input
+  }
+
+  // Filter locations based on search input
+  void _filterLocations() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredLocations =
+          locations.where((location) {
+            final placename = location['placename']!.toLowerCase();
+            return placename.contains(query);
+          }).toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose(); // Clean up controller
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Hi ${userbox.values.first.toString()}',
+        title: const Text(
+          'Campify',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -44,20 +69,20 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => RoleScreen()),
+              MaterialPageRoute(builder: (context) => const ControlScreen()),
             );
           },
-          icon: Icon(Icons.add_box_rounded),
+          icon: const Icon(Icons.add_box_rounded),
         ),
         actions: [
           IconButton(
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SettingsScreen()),
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
             },
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
           ),
         ],
       ),
@@ -66,33 +91,37 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.all(30),
             child: Container(
-              padding: EdgeInsets.all(7),
+              padding: const EdgeInsets.all(7),
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 182, 182, 128),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _searchController, // Attach controller
                 decoration: InputDecoration(
-                  icon: Icon(Icons.search, color: Colors.grey[350]),
-                  hintText: 'Hinted search text',
+                  icon: const Icon(Icons.search, color: Colors.grey),
+                  hintText: 'Search locations...',
                   hintStyle: TextStyle(color: Colors.grey[350]),
                   border: InputBorder.none,
                 ),
               ),
             ),
           ),
-          SizedBox(height: 25),
+          const SizedBox(height: 25),
           Expanded(
-            child: ListView.builder(
-              itemCount: locations.length,
-              itemBuilder: (context, index) {
-                final location = locations[index];
-                return LocationTile(
-                  placename: location['placename']!,
-                  image: location['image']!,
-                );
-              },
-            ),
+            child:
+                _filteredLocations.isEmpty
+                    ? const Center(child: Text('No locations found'))
+                    : ListView.builder(
+                      itemCount: _filteredLocations.length,
+                      itemBuilder: (context, index) {
+                        final location = _filteredLocations[index];
+                        return LocationTile(
+                          placename: location['placename']!,
+                          image: location['image']!,
+                        );
+                      },
+                    ),
           ),
         ],
       ),
@@ -101,11 +130,11 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ClientScreen()),
+            MaterialPageRoute(builder: (context) => const ClientScreen()),
           );
         },
         backgroundColor: Colors.lime.shade800,
-        child: Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       bottomNavigationBar: BottomAppBar(
         notchMargin: 5.0,
@@ -119,9 +148,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(Icons.home, color: Colors.black),
+                    icon: const Icon(Icons.home, color: Colors.black),
                   ),
-                  //Text('Home', style: TextStyle(color: Colors.black)),
                 ],
               ),
             ),
@@ -131,16 +159,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.insert_comment_outlined,
                       color: Colors.black,
                     ),
                   ),
-                  //   Text('Status', style: TextStyle(color: Colors.black)),
                 ],
               ),
             ),
-            SizedBox(width: 40), // Space for FAB
+            const SizedBox(width: 40), // Space for FAB
             Expanded(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -149,12 +176,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => WorkerScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const WorkerScreen(),
+                        ),
                       );
                     },
-                    icon: Icon(Icons.person, color: Colors.black),
+                    icon: const Icon(Icons.person, color: Colors.black),
                   ),
-                  //  Text('Person', style: TextStyle(color: Colors.black)),
                 ],
               ),
             ),
@@ -164,9 +192,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(Icons.dashboard, color: Colors.black),
+                    icon: const Icon(Icons.dashboard, color: Colors.black),
                   ),
-                  //   Text('Dashboard', style: TextStyle(color: Colors.black)),
                 ],
               ),
             ),
@@ -187,13 +214,13 @@ class LocationTile extends StatelessWidget {
     return SizedBox(
       height: 120,
       child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: ListTile(
           leading: ClipRRect(
             child: Image.asset(image, width: 70, height: 80, fit: BoxFit.cover),
           ),
-          title: Text(placename, style: TextStyle(fontSize: 16)),
+          title: Text(placename, style: const TextStyle(fontSize: 16)),
           onTap: () {},
         ),
       ),

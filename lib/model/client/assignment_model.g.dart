@@ -1,35 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'package_model.dart';
+part of 'assignment_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class PackageAdapter extends TypeAdapter<Package> {
+class AssignmentAdapter extends TypeAdapter<Assignment> {
   @override
-  final int typeId = 4;
+  final int typeId = 9;
 
   @override
-  Package read(BinaryReader reader) {
+  Assignment read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Package(
-      id: fields[0] as String,
-      packageName: fields[1] as String,
+    return Assignment(
+      clientId: fields[0] as String,
+      tentId: fields[1] as String,
+      workerId: fields[2] as String,
+      date: fields[3] as String,
+      isCancelled: fields[4] == null ? false : fields[4] as bool,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Package obj) {
+  void write(BinaryWriter writer, Assignment obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.id)
+      ..write(obj.clientId)
       ..writeByte(1)
-      ..write(obj.packageName);
+      ..write(obj.tentId)
+      ..writeByte(2)
+      ..write(obj.workerId)
+      ..writeByte(3)
+      ..write(obj.date)
+      ..writeByte(4)
+      ..write(obj.isCancelled);
   }
 
   @override
@@ -38,7 +47,7 @@ class PackageAdapter extends TypeAdapter<Package> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PackageAdapter &&
+      other is AssignmentAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

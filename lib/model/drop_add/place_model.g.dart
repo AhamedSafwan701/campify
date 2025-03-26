@@ -1,35 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'package_model.dart';
+part of 'place_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class PackageAdapter extends TypeAdapter<Package> {
+class PlaceAdapter extends TypeAdapter<Place> {
   @override
-  final int typeId = 4;
+  final int typeId = 5;
 
   @override
-  Package read(BinaryReader reader) {
+  Place read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Package(
+    return Place(
       id: fields[0] as String,
-      packageName: fields[1] as String,
+      placeName: fields[1] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Package obj) {
+  void write(BinaryWriter writer, Place obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.packageName);
+      ..write(obj.placeName);
   }
 
   @override
@@ -38,7 +38,7 @@ class PackageAdapter extends TypeAdapter<Package> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PackageAdapter &&
+      other is PlaceAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

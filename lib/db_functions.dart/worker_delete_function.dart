@@ -2,8 +2,8 @@ import 'package:camify_travel_app/model/workers/create_work_model.dart';
 import 'package:camify_travel_app/model/workers/name_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-const String WORKERS_BOX = 'WORKERSBOX';
-const String Manage_Work = 'MANAGEBOX';
+const String WORKERS_BOX = "WORKERS_BOX";
+const String MANAGE_BOX = "MANAGE_BOX";
 
 class WorkerFunctions {
   static Future<void> addWorker(Worker worker) async {
@@ -33,26 +33,26 @@ class WorkerFunctions {
 
   // Manage work
   static Future<void> addmanagework(Manage work) async {
-    final box = Hive.box<Manage>(Manage_Work);
+    final box = Hive.box<Manage>(MANAGE_BOX);
     print('Adding work to MANAGEBOX: ${work.name} with ${work.id}');
     await box.put(work.id, work);
     print('Work added, MANAGEBOX size: ${box.length}');
   }
 
   static Future<void> updatemanagework(int index, Manage work) async {
-    final box = Hive.box<Manage>(Manage_Work);
+    final box = Hive.box<Manage>(MANAGE_BOX);
     print('Updating work at index $index: ${work.name}');
     await box.putAt(index, work);
     print('Work updated, MANAGEBOX size: ${box.length}');
   }
 
   static Future<void> deletemanagework(String id) async {
-    final box = Hive.box<Manage>(Manage_Work);
+    final box = Hive.box<Manage>(MANAGE_BOX);
     await box.delete(id);
   }
 
   static List<Manage> getManageWork() {
-    final box = Hive.box<Manage>(Manage_Work);
+    final box = Hive.box<Manage>(MANAGE_BOX);
     return box.values.toList();
   }
 }

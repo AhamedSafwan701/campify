@@ -1,27 +1,27 @@
-import 'package:camify_travel_app/db_functions.dart/package_function.dart';
-import 'package:camify_travel_app/model/drop_add/package_model.dart';
+import 'package:camify_travel_app/db_functions.dart/place_functions.dart';
+import 'package:camify_travel_app/model/drop_add/place_model.dart';
 import 'package:camify_travel_app/widgets/custom_alertbox.dart';
 import 'package:flutter/material.dart';
 
-class AddPackageScreen extends StatefulWidget {
-  const AddPackageScreen({super.key});
+class AddPlaceScreen extends StatefulWidget {
+  const AddPlaceScreen({super.key});
 
   @override
-  State<AddPackageScreen> createState() => _AddPackageScreenState();
+  State<AddPlaceScreen> createState() => _AddPlaceScreenState();
 }
 
-class _AddPackageScreenState extends State<AddPackageScreen> {
+class _AddPlaceScreenState extends State<AddPlaceScreen> {
   final TextEditingController _idController = TextEditingController();
-  final TextEditingController _packageNameController = TextEditingController();
+  final TextEditingController _placeNameController = TextEditingController();
   @override
   void initState() {
     super.initState();
-    getAllPackage();
+    getAllPlace();
   }
 
-  void _showAddPackageSheet(BuildContext ctx) {
+  void _showAddPlaceSheet(BuildContext ctx) {
     _idController.clear();
-    _packageNameController.clear();
+    _placeNameController.clear();
     showModalBottomSheet(
       backgroundColor: Color(0xFFE5E6E1),
       isScrollControlled: true,
@@ -40,30 +40,27 @@ class _AddPackageScreenState extends State<AddPackageScreen> {
             children: [
               TextField(
                 controller: _idController,
-                decoration: InputDecoration(hintText: "Package ID"),
+                decoration: InputDecoration(hintText: "Place ID"),
               ),
               SizedBox(height: 10),
               TextField(
-                controller: _packageNameController,
-                decoration: InputDecoration(hintText: 'Package Name'),
+                controller: _placeNameController,
+                decoration: InputDecoration(hintText: 'Place Name'),
               ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   if (_idController.text.isNotEmpty &&
-                      _packageNameController.text.isNotEmpty) {
-                    final newPackage = Package(
+                      _placeNameController.text.isNotEmpty) {
+                    final newPlace = Place(
                       id: _idController.text,
-                      packageName: _packageNameController.text,
+                      placeName: _placeNameController.text,
                     );
-                    await addPackage(newPackage);
+                    await addPlace(newPlace);
                     Navigator.of(ctx).pop();
                   }
                 },
-                child: Text(
-                  'Add Package',
-                  style: TextStyle(color: Colors.black),
-                ),
+                child: Text('Add Place', style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 15),
             ],
@@ -78,7 +75,7 @@ class _AddPackageScreenState extends State<AddPackageScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Package',
+          'Add Place',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -91,16 +88,16 @@ class _AddPackageScreenState extends State<AddPackageScreen> {
         ),
       ),
       body: ValueListenableBuilder(
-        valueListenable: packageNotifier,
-        builder: (context, List<Package> packages, _) {
-          return packages.isEmpty
-              ? Center(child: Text('No packages'))
+        valueListenable: placeNotifier,
+        builder: (context, List<Place> places, _) {
+          return places.isEmpty
+              ? Center(child: Text('No place'))
               : ListView.builder(
-                itemCount: packages.length,
+                itemCount: places.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(packages[index].packageName),
-                    subtitle: Text('ID: ${packages[index].id}'),
+                    title: Text(places[index].placeName),
+                    subtitle: Text('ID: ${places[index].id}'),
                     trailing: IconButton(
                       icon: Icon(Icons.delete, color: Colors.red),
                       onPressed: () {
@@ -108,9 +105,9 @@ class _AddPackageScreenState extends State<AddPackageScreen> {
                           context: context,
                           builder: (ctx) {
                             return CustomAlertbox(
-                              title: 'Delete package',
+                              title: 'Delete Place',
                               content: Text(
-                                'Are you sure you want to delete ${packages[index].packageName}?',
+                                'Are you sure you want to delete ${places[index].placeName}?',
                               ),
                               actions: [
                                 TextButton(
@@ -125,11 +122,11 @@ class _AddPackageScreenState extends State<AddPackageScreen> {
                                 ElevatedButton(
                                   onPressed: () async {
                                     debugPrint(
-                                      'package deleted: ${packages[index].packageName}',
+                                      'place deleted: ${places[index].placeName}',
                                     );
                                     Navigator.of(ctx).pop();
                                     try {
-                                      await deletePackage(packages[index].id);
+                                      await deletePlace(places[index].id);
                                     } catch (e) {
                                       e;
                                     }
@@ -144,24 +141,6 @@ class _AddPackageScreenState extends State<AddPackageScreen> {
                           },
                         );
                       },
-
-                      //   onPressed: () {
-                      //     //  await deleteRole(roles[index].id);
-                      //     showDialog(
-                      //       context: context,
-                      //       builder: (ctx) {
-                      //         return CustomAlertbox(
-                      //           icon: Icon(Icons.delete, color: Colors.red),
-                      //           onPressed: () {
-                      //             showDialog(context: context, builder: (ctx) {
-                      //               return
-                      //             });
-                      //           },
-                      //         );
-                      //       },
-                      //     );
-                      //   },
-                      // ),
                     ),
                   );
                 },
@@ -171,7 +150,7 @@ class _AddPackageScreenState extends State<AddPackageScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color(0xFF8D9851),
         onPressed: () {
-          _showAddPackageSheet(context);
+          _showAddPlaceSheet(context);
         },
         child: Icon(Icons.add, color: Colors.white),
       ),
@@ -181,7 +160,7 @@ class _AddPackageScreenState extends State<AddPackageScreen> {
   @override
   void dispose() {
     _idController.dispose();
-    _packageNameController.dispose();
+    _placeNameController.dispose();
     super.dispose();
   }
 }

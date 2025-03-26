@@ -3,9 +3,11 @@ import 'package:camify_travel_app/Screens/Listworker.dart';
 import 'package:camify_travel_app/Screens/worker_detail.dart';
 import 'package:camify_travel_app/db_functions.dart/role_funtion.dart';
 import 'package:camify_travel_app/db_functions.dart/worker_delete_function.dart';
+import 'package:camify_travel_app/db_functions.dart/worker_availabilty_functions.dart'; // Added
 import 'package:camify_travel_app/model/workers/create_work_model.dart';
 import 'package:camify_travel_app/model/workers/name_model.dart';
 import 'package:camify_travel_app/model/workers/role_model.dart';
+import 'package:camify_travel_app/model/awailability/worker_model.dart'; // Added
 import 'package:camify_travel_app/widgets/custom_textfield.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -134,12 +136,10 @@ class _WorkerScreenState extends State<WorkerScreen> {
                         hint: 'Name',
                         controller: _nameController,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty)
                             return 'Please enter a name';
-                          }
-                          if (value.length < 2) {
+                          if (value.length < 2)
                             return 'Name must be at least 2 characters long';
-                          }
                           return null;
                         },
                       ),
@@ -179,12 +179,10 @@ class _WorkerScreenState extends State<WorkerScreen> {
                         controller: _phoneNumberController,
                         keyboardType: TextInputType.phone,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty)
                             return 'Please enter a phone number';
-                          }
-                          if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
+                          if (!RegExp(r'^[0-9]{10}$').hasMatch(value))
                             return 'Phone number must be 10 digits';
-                          }
                           return null;
                         },
                       ),
@@ -194,13 +192,11 @@ class _WorkerScreenState extends State<WorkerScreen> {
                         controller: _ageController,
                         keyboardType: TextInputType.number,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty)
                             return 'Please enter an age';
-                          }
                           final age = int.tryParse(value);
-                          if (age == null || age < 18 || age > 100) {
+                          if (age == null || age < 18 || age > 100)
                             return 'Age must be between 18 and 100';
-                          }
                           return null;
                         },
                       ),
@@ -238,6 +234,7 @@ class _WorkerScreenState extends State<WorkerScreen> {
                           if (_formKey.currentState!.validate() &&
                               _imageFile != null &&
                               _idProofFile != null) {
+                            final workerId = generateId();
                             final newWorker = Worker(
                               name: _nameController.text,
                               role: _selectedRole,
@@ -247,7 +244,16 @@ class _WorkerScreenState extends State<WorkerScreen> {
                               idProofPath: _idProofFile!.path,
                             );
                             await WorkerFunctions.addWorker(newWorker);
-                            print('Worker added ${newWorker.name}');
+                            // Sync with WorkerAvailable
+                            await addWorker(
+                              WorkerAvailable(
+                                workerId: workerId,
+                                name: _nameController.text,
+                              ),
+                            );
+                            print(
+                              'Worker added ${newWorker.name} and synced to availability',
+                            );
                             _nameController.clear();
                             _phoneNumberController.clear();
                             _ageController.clear();
@@ -305,9 +311,8 @@ class _WorkerScreenState extends State<WorkerScreen> {
                   FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
                 ],
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
+                  if (value == null || value.trim().isEmpty)
                     return 'Work Name cannot be empty';
-                  }
                   return null;
                 },
               ),
@@ -368,10 +373,7 @@ class _WorkerScreenState extends State<WorkerScreen> {
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 182, 182, 128),
         leading: IconButton(
-          onPressed: () {
-            print('Back pressed');
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back),
         ),
         actions: [
@@ -385,9 +387,7 @@ class _WorkerScreenState extends State<WorkerScreen> {
             icon: const Icon(Icons.work),
           ),
           IconButton(
-            onPressed: () {
-              _showAddWorkDialog(context);
-            },
+            onPressed: () => _showAddWorkDialog(context),
             icon: const Icon(Icons.add),
           ),
         ],
@@ -422,15 +422,7 @@ class _WorkerScreenState extends State<WorkerScreen> {
               ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF8D9851),
-        onPressed: () {
-          print('FAB pressed');
-          try {
-            _showAddWorkerSheet(context);
-          } catch (e, stackTrace) {
-            print('Error in FAB: $e');
-            print(stackTrace);
-          }
-        },
+        onPressed: () => _showAddWorkerSheet(context),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

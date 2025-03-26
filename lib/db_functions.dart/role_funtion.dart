@@ -21,7 +21,7 @@ import 'package:camify_travel_app/model/workers/role_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-const String ROLE_BOX = "ROLEBOX";
+const String ROLE_BOX = "ROLE_BOX";
 ValueNotifier<List<Role>> roleNotifier = ValueNotifier([]);
 
 Future<void> addRole(Role role) async {

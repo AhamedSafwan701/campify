@@ -15,6 +15,7 @@ class WorkerDetailScreen extends StatefulWidget {
     required this.worker,
     required this.index,
   });
+
   @override
   State<WorkerDetailScreen> createState() => _WorkerDetailScreenState();
 }
@@ -46,11 +47,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
     );
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-    }
+    if (pickedFile != null) setState(() => _imageFile = File(pickedFile.path));
   }
 
   Future<void> _pickIdProof() async {
@@ -59,9 +56,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
       allowedExtensions: ['jpg', 'png', 'pdf'],
     );
     if (result != null && result.files.single.path != null) {
-      setState(() {
-        _idProofFile = File(result.files.single.path!);
-      });
+      setState(() => _idProofFile = File(result.files.single.path!));
     }
   }
 
@@ -70,78 +65,87 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Edit Worker'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: CircleAvatar(
-                    radius: 10,
-                    backgroundImage:
-                        _imageFile != null ? FileImage(_imageFile!) : null,
-                    child:
-                        _imageFile == null
-                            ? const Icon(
-                              Icons.photo,
-                              size: 50,
-                              color: Colors.black,
-                            )
-                            : null,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                CustomTextfield(hint: 'Name', controller: _nameController),
-                const SizedBox(height: 10),
-                CustomTextfield(
-                  hint: 'Phone Number',
-                  controller: _phoneNumberController,
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 10),
-                CustomTextfield(
-                  hint: 'Age',
-                  controller: _ageController,
-                  keyboardType: TextInputType.number,
-                  //   isAgeField: true,
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: _pickIdProof,
-                  child: Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      image:
-                          _idProofFile != null
-                              ? DecorationImage(
-                                image: FileImage(_idProofFile!),
-                                fit: BoxFit.cover,
-                              )
-                              : null,
+          title: const Text('Edit Worker', style: TextStyle(fontSize: 20)),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setDialogState) {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        await _pickImage();
+                        setDialogState(() {});
+                      },
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage:
+                            _imageFile != null ? FileImage(_imageFile!) : null,
+                        child:
+                            _imageFile == null
+                                ? const Icon(
+                                  Icons.photo,
+                                  size: 50,
+                                  color: Colors.black,
+                                )
+                                : null,
+                      ),
                     ),
-                    child:
-                        _idProofFile == null
-                            ? const Icon(Icons.upload_file)
-                            : _idProofFile!.path.endsWith('.pdf')
-                            ? const Icon(
-                              Icons.picture_as_pdf,
-                              color: Colors.red,
-                            )
-                            : null,
-                  ),
+                    const SizedBox(height: 20),
+                    CustomTextfield(hint: 'Name', controller: _nameController),
+                    const SizedBox(height: 20),
+                    CustomTextfield(
+                      hint: 'Phone Number',
+                      controller: _phoneNumberController,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 20),
+                    CustomTextfield(
+                      hint: 'Age',
+                      controller: _ageController,
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () async {
+                        await _pickIdProof();
+                        setDialogState(() {});
+                      },
+                      child: Container(
+                        height: 110,
+                        width: 110,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          image:
+                              _idProofFile != null &&
+                                      !_idProofFile!.path.endsWith('.pdf')
+                                  ? DecorationImage(
+                                    image: FileImage(_idProofFile!),
+                                    fit: BoxFit.cover,
+                                  )
+                                  : null,
+                        ),
+                        child:
+                            _idProofFile == null
+                                ? const Icon(Icons.upload_file, size: 50)
+                                : _idProofFile!.path.endsWith('.pdf')
+                                ? const Icon(
+                                  Icons.picture_as_pdf,
+                                  size: 50,
+                                  color: Colors.red,
+                                )
+                                : null,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(ctx).pop();
-              },
-              child: Text('Cancel'),
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -158,7 +162,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                         _ageController.text.isNotEmpty
                             ? int.parse(_ageController.text)
                             : null,
-                    idProofPath: _imageFile!.path,
+                    idProofPath: _idProofFile?.path,
                   );
                   await WorkerFunctions.updateWorker(
                     widget.index,
@@ -167,9 +171,15 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                   debugPrint('Worker updated: ${updateWorker.name}');
                   Navigator.of(ctx).pop();
                   setState(() {});
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please fill required fields'),
+                    ),
+                  );
                 }
               },
-              child: Text('Update'),
+              child: const Text('Update'),
             ),
           ],
         );
@@ -189,7 +199,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: Text('No'),
+              child: const Text('No'),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -198,7 +208,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                 Navigator.of(ctx).pop();
                 Navigator.of(context).pop(true);
               },
-              child: Text('Yes'),
+              child: const Text('Yes'),
             ),
           ],
         );
@@ -210,31 +220,29 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Details',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 182, 182, 128),
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
         ),
         actions: [
           IconButton(
             onPressed: () => _showEditDialog(context),
-            icon: Icon(Icons.edit, color: Colors.blue),
+            icon: const Icon(Icons.edit, color: Colors.blue),
           ),
           IconButton(
             onPressed: () => _deleteWorker(context),
-            icon: Icon(Icons.delete, color: Colors.red),
+            icon: const Icon(Icons.delete, color: Colors.red),
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             Center(
@@ -244,25 +252,25 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                     _imageFile != null ? FileImage(_imageFile!) : null,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Name: ${_nameController.text}',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Role: ${widget.worker.role ?? "Not assigned"}',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Phone: ${_phoneNumberController.text.isNotEmpty ? _phoneNumberController.text : "Not provided"}',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Age: ${_ageController.text.isNotEmpty ? _ageController.text : "Not provided"}',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 10),
             const Text('ID Proof:', style: TextStyle(fontSize: 18)),
@@ -286,6 +294,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
     );
   }
 
+  @override
   void dispose() {
     _nameController.dispose();
     _phoneNumberController.dispose();

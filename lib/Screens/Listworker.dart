@@ -126,6 +126,7 @@ class _WorkListScreenState extends State<WorkListScreen>
                 );
                 await WorkerFunctions.updatemanagework(workIndex, updatedWork);
                 Navigator.of(dialogContext).pop();
+                setState(() {});
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('"${work.name}" marked as completed')),
                 );
@@ -154,7 +155,7 @@ class _WorkListScreenState extends State<WorkListScreen>
               onPressed: () async {
                 await WorkerFunctions.deletemanagework(workId);
                 Navigator.of(dialogContext).pop();
-                setState(() {}); // Added for UI refresh
+                setState(() {});
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text('"$workName" deleted')));
@@ -182,11 +183,10 @@ class _WorkListScreenState extends State<WorkListScreen>
                   ),
                   style: const TextStyle(color: Colors.black),
                   autofocus: true,
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value.trim().toLowerCase();
-                    });
-                  },
+                  onChanged:
+                      (value) => setState(
+                        () => _searchQuery = value.trim().toLowerCase(),
+                      ),
                 )
                 : const Text(
                   'Work List',
@@ -197,15 +197,14 @@ class _WorkListScreenState extends State<WorkListScreen>
                 ),
         actions: [
           IconButton(
-            onPressed: () {
-              setState(() {
-                _isSearching = !_isSearching;
-                if (!_isSearching) {
-                  _searchController.clear();
-                  _searchQuery = '';
-                }
-              });
-            },
+            onPressed:
+                () => setState(() {
+                  _isSearching = !_isSearching;
+                  if (!_isSearching) {
+                    _searchController.clear();
+                    _searchQuery = '';
+                  }
+                }),
             icon: Icon(_isSearching ? Icons.close : Icons.search),
           ),
         ],
@@ -250,7 +249,6 @@ class _WorkListScreenState extends State<WorkListScreen>
           return TabBarView(
             controller: _tabController,
             children: [
-              // Pending Tab
               filteredPendingWorks.isEmpty
                   ? const Center(child: Text('No pending works'))
                   : ListView.builder(
@@ -295,7 +293,6 @@ class _WorkListScreenState extends State<WorkListScreen>
                       );
                     },
                   ),
-              // Completed Tab
               filteredCompletedWorks.isEmpty
                   ? const Center(child: Text('No completed works'))
                   : ListView.builder(
