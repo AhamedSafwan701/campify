@@ -25,13 +25,15 @@ class PackageClientAdapter extends TypeAdapter<PackageClient> {
       placeName: fields[5] as String,
       imagePath: fields[6] as String?,
       idProofPath: fields[7] as String?,
+      packageType: fields[8] as String,
+      price: fields[9] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, PackageClient obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.clientId)
       ..writeByte(1)
@@ -47,7 +49,11 @@ class PackageClientAdapter extends TypeAdapter<PackageClient> {
       ..writeByte(6)
       ..write(obj.imagePath)
       ..writeByte(7)
-      ..write(obj.idProofPath);
+      ..write(obj.idProofPath)
+      ..writeByte(8)
+      ..write(obj.packageType)
+      ..writeByte(9)
+      ..write(obj.price);
   }
 
   @override

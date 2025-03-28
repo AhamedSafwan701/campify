@@ -71,6 +71,8 @@ class CheckoutScreen extends StatelessWidget {
                         date: '',
                         packageName: '',
                         placeName: '',
+                        packageType: 'Normal',
+                        price: 0.0,
                       ),
                 );
                 return Text(

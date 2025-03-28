@@ -14,7 +14,7 @@ class BookingHistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Booked History',
+          'Booking History',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -29,9 +29,9 @@ class BookingHistoryScreen extends StatelessWidget {
       body: ValueListenableBuilder(
         valueListenable: Hive.box<Assignment>(ASSIGNMENT_BOX).listenable(),
         builder: (context, Box<Assignment> box, _) {
-          final assignments = box.values.toList();
+          final assignments = box.values.where((a) => a.isCancelled).toList();
           if (assignments.isEmpty) {
-            return const Center(child: Text('No booking history found'));
+            return const Center(child: Text('No cancelled bookings found'));
           }
           return ListView.builder(
             itemCount: assignments.length,
@@ -40,7 +40,7 @@ class BookingHistoryScreen extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -58,10 +58,25 @@ class BookingHistoryScreen extends StatelessWidget {
                                   date: '',
                                   packageName: '',
                                   placeName: '',
+                                  imagePath: null,
+                                  idProofPath: null,
+                                  packageType: 'Not Set',
+                                  price: 0.0,
                                 ),
                           );
-                          return Text(
-                            'Client: ${client.name} (ID: ${client.clientId})',
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Client: ${client.name} (ID: ${client.clientId})',
+                              ),
+                              Text(
+                                'Package: ${client.packageType ?? "Not Set"}',
+                              ),
+                              Text(
+                                'Price: ₹${client.price?.toStringAsFixed(2) ?? "0.00"}',
+                              ),
+                            ],
                           );
                         },
                       ),
@@ -80,7 +95,7 @@ class BookingHistoryScreen extends StatelessWidget {
                       ValueListenableBuilder(
                         valueListenable:
                             Hive.box<WorkerAvailable>(
-                              'WORKERAVAILABLE_BOX',
+                              'worker_box',
                             ).listenable(),
                         builder: (context, Box<WorkerAvailable> workerBox, _) {
                           final worker = workerBox.get(assignment.workerId);
@@ -92,13 +107,10 @@ class BookingHistoryScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text('Date: ${assignment.date}'),
                       const SizedBox(height: 8),
-                      Text(
-                        'Status: ${assignment.isCancelled ? "Cancelled" : "Active"}',
+                      const Text(
+                        'Status: Cancelled',
                         style: TextStyle(
-                          color:
-                              assignment.isCancelled
-                                  ? Colors.red
-                                  : Colors.green,
+                          color: Colors.red,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

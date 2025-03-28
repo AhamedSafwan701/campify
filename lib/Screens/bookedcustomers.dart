@@ -5,6 +5,7 @@ import 'package:camify_travel_app/model/awailability/tent_model.dart';
 import 'package:camify_travel_app/model/awailability/worker_model.dart';
 import 'package:camify_travel_app/model/client/assignment_model.dart';
 import 'package:camify_travel_app/model/client/booking_model.dart';
+import 'package:camify_travel_app/widgets/custom_alertbox.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -15,26 +16,52 @@ class BookedCustomerScreen extends StatelessWidget {
     BuildContext context,
     Assignment assignment,
   ) async {
-    final tentBox = Hive.box<Tent>(TENT_BOX);
-    final tent = tentBox.get(assignment.tentId);
-    if (tent != null && tent.bookedDates != null) {
-      tent.bookedDates!.remove(assignment.date);
-      await tentBox.put(assignment.tentId, tent);
-      tentNotifier.value = tentBox.values.toList();
-      tentNotifier.notifyListeners();
-    }
-    final workerBox = Hive.box<WorkerAvailable>(WORKERAVAILABLE_BOX);
-    final worker = workerBox.get(assignment.workerId);
-    if (worker != null && worker.bookedDates != null) {
-      worker.bookedDates!.remove(assignment.date);
-      await workerBox.put(assignment.workerId, worker);
-      workeravaileNotifier.value = workerBox.values.toList();
-      workeravaileNotifier.notifyListeners();
-    }
+    showDialog(
+      context: context,
+      builder:
+          (context) => CustomAlertbox(
+            title: 'Cancel Booking',
+            content: Text('Are you sure you want to cancel this booking?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('No'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
 
-    await deleteAssigment(assignment.clientId, assignment.date);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Booking cancelled successfully')),
+                  final tentBox = Hive.box<Tent>(TENT_BOX);
+                  final tent = tentBox.get(assignment.tentId);
+                  if (tent != null && tent.bookedDates != null) {
+                    tent.bookedDates!.remove(assignment.date);
+                    await tentBox.put(assignment.tentId, tent);
+                    tentNotifier.value = tentBox.values.toList();
+                    tentNotifier.notifyListeners();
+                  }
+                  final workerBox = Hive.box<WorkerAvailable>(
+                    WORKERAVAILABLE_BOX,
+                  );
+                  final worker = workerBox.get(assignment.workerId);
+                  if (worker != null && worker.bookedDates != null) {
+                    worker.bookedDates!.remove(assignment.date);
+                    await workerBox.put(assignment.workerId, worker);
+                    workeravaileNotifier.value = workerBox.values.toList();
+                    workeravaileNotifier.notifyListeners();
+                  }
+                  await deleteAssigment(assignment.clientId, assignment.date);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Booking cancelled successfully'),
+                    ),
+                  );
+                },
+                child: Text('Yes', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
     );
   }
 
@@ -58,7 +85,7 @@ class BookedCustomerScreen extends StatelessWidget {
       body: ValueListenableBuilder(
         valueListenable: Hive.box<Assignment>(ASSIGNMENT_BOX).listenable(),
         builder: (context, Box<Assignment> box, _) {
-          final assignments = box.values.toList();
+          final assignments = box.values.where((a) => !a.isCancelled).toList();
           if (assignments.isEmpty) {
             return const Center(child: Text('No Booking found'));
           }
@@ -87,6 +114,8 @@ class BookedCustomerScreen extends StatelessWidget {
                                   date: '',
                                   packageName: '',
                                   placeName: '',
+                                  packageType: 'Normal',
+                                  price: 0.0,
                                 ),
                           );
                           return Text(

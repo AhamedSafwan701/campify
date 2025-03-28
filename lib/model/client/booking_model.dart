@@ -4,7 +4,7 @@ part 'booking_model.g.dart';
 @HiveType(typeId: 6)
 class PackageClient {
   @HiveField(0)
-  final String clientId; // New field
+  final String clientId;
   @HiveField(1)
   final String name;
   @HiveField(2)
@@ -19,9 +19,13 @@ class PackageClient {
   final String? imagePath;
   @HiveField(7)
   final String? idProofPath;
+  @HiveField(8)
+  final String? packageType;
+  @HiveField(9)
+  final double? price;
 
   PackageClient({
-    required this.clientId, // Added
+    required this.clientId,
     required this.name,
     required this.phone,
     required this.date,
@@ -29,5 +33,7 @@ class PackageClient {
     required this.placeName,
     this.imagePath,
     this.idProofPath,
+    this.packageType,
+    this.price,
   });
 }

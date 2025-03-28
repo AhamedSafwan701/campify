@@ -217,7 +217,7 @@ class _WorkListScreenState extends State<WorkListScreen>
         ),
       ),
       body: ValueListenableBuilder(
-        valueListenable: Hive.box<Manage>('MANAGEBOX').listenable(),
+        valueListenable: Hive.box<Manage>('MANAGE_BOX').listenable(),
         builder: (context, Box<Manage> box, _) {
           final works = box.values.toList();
           final pendingWorks =

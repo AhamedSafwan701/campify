@@ -365,8 +365,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class ClientScreen extends StatefulWidget {
-  final PackageClient? clientToEdit;
-  const ClientScreen({super.key, this.clientToEdit});
+  final PackageClient clientToEdit;
+  const ClientScreen({super.key, required this.clientToEdit});
 
   @override
   State<ClientScreen> createState() => _ClientScreenState();
@@ -376,11 +376,20 @@ class _ClientScreenState extends State<ClientScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  String? _selectedPackage;
-  DateTime? _selectedDate;
+  String? _selectedPackageName;
   String? _selectedPlace;
+  String? _selectedPackageType;
+  double _price = 0.0;
   File? _imageFile;
   File? _idProofFile;
+  DateTime? _selectedDate;
+
+  final List<String> _packageTypes = ['Normal', 'Premium', 'Luxury'];
+  final Map<String, double> _packagePrices = {
+    'Normal': 500.0,
+    'Premium': 1000.0,
+    'Luxury': 2000.0,
+  };
 
   @override
   void initState() {
@@ -389,14 +398,16 @@ class _ClientScreenState extends State<ClientScreen> {
       _nameController.text = widget.clientToEdit!.name;
       _phoneController.text = widget.clientToEdit!.phone;
       _dateController.text = widget.clientToEdit!.date;
-      _selectedPackage = widget.clientToEdit!.packageName;
+      _selectedPackageName = widget.clientToEdit!.packageName;
       _selectedPlace = widget.clientToEdit!.placeName;
+      _selectedPackageType = widget.clientToEdit!.packageType;
+      _price = widget.clientToEdit!.price;
       if (widget.clientToEdit!.imagePath != null) {
         _imageFile = File(widget.clientToEdit!.imagePath!);
       }
-      // if (widget.clientToEdit!.idProofPath != null) {
-      //   _idProofFile = File(widget.clientToEdit!.idProofPath);
-      // }
+      if (widget.clientToEdit!.idProofPath != null) {
+        _idProofFile = File(widget.clientToEdit!.idProofPath!);
+      }
     }
   }
 
@@ -460,7 +471,9 @@ class _ClientScreenState extends State<ClientScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ClientlistScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const ClientlistScreen(),
+                ),
               );
             },
             icon: const Icon(Icons.person),
@@ -544,13 +557,13 @@ class _ClientScreenState extends State<ClientScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 ValueListenableBuilder(
                   valueListenable: packageNotifier,
                   builder: (context, List<Package> packages, _) {
                     return DropdownButtonFormField<String>(
-                      value: _selectedPackage,
-                      hint: const Text('Select Package'),
+                      value: _selectedPackageName,
+                      hint: const Text('Select Package Name'),
                       items:
                           packages.map((package) {
                             return DropdownMenuItem<String>(
@@ -559,7 +572,8 @@ class _ClientScreenState extends State<ClientScreen> {
                             );
                           }).toList(),
                       onChanged:
-                          (value) => setState(() => _selectedPackage = value),
+                          (value) =>
+                              setState(() => _selectedPackageName = value),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25),
@@ -567,6 +581,37 @@ class _ClientScreenState extends State<ClientScreen> {
                       ),
                     );
                   },
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: _selectedPackageType,
+                  hint: const Text('Select Package Type'),
+                  items:
+                      _packageTypes.map((type) {
+                        return DropdownMenuItem<String>(
+                          value: type,
+                          child: Text('$type - ₹${_packagePrices[type]}'),
+                        );
+                      }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedPackageType = value;
+                      _price = _packagePrices[value]!;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Price: ₹$_price',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -593,8 +638,9 @@ class _ClientScreenState extends State<ClientScreen> {
                       if (_nameController.text.isEmpty ||
                           _phoneController.text.isEmpty ||
                           _dateController.text.isEmpty ||
-                          _selectedPackage == null ||
-                          _selectedPlace == null) {
+                          _selectedPackageName == null ||
+                          _selectedPlace == null ||
+                          _selectedPackageType == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Please fill all fields'),
@@ -605,14 +651,16 @@ class _ClientScreenState extends State<ClientScreen> {
                       final client = PackageClient(
                         clientId:
                             widget.clientToEdit?.clientId ??
-                            _generateClientId(), // Generate or use existing
+                            _generateClientId(),
                         name: _nameController.text,
                         phone: _phoneController.text,
                         date: _dateController.text,
-                        packageName: _selectedPackage!,
+                        packageName: _selectedPackageName!,
                         placeName: _selectedPlace!,
                         imagePath: _imageFile?.path,
                         idProofPath: _idProofFile?.path,
+                        packageType: _selectedPackageType!,
+                        price: _price,
                       );
                       if (widget.clientToEdit == null) {
                         PackageFunctions.addClient(client);
