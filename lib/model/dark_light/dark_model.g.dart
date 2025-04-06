@@ -1,35 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'package_model.dart';
+part of 'dark_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class PackageAdapter extends TypeAdapter<Package> {
+class ThemeModeModelAdapter extends TypeAdapter<ThemeModeModel> {
   @override
-  final int typeId = 4;
+  final int typeId = 10;
 
   @override
-  Package read(BinaryReader reader) {
+  ThemeModeModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Package(
-      id: fields[0] as String,
-      packageName: fields[1] as String,
-    );
+    return ThemeModeModel(isDarkMode: fields[0] as bool);
   }
 
   @override
-  void write(BinaryWriter writer, Package obj) {
+  void write(BinaryWriter writer, ThemeModeModel obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
-      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.packageName);
+      ..writeByte(0)
+      ..write(obj.isDarkMode);
   }
 
   @override
@@ -38,7 +33,7 @@ class PackageAdapter extends TypeAdapter<Package> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PackageAdapter &&
+      other is ThemeModeModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

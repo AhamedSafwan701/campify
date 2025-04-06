@@ -8,10 +8,10 @@ import 'package:camify_travel_app/model/client/booking_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class CheckoutScreen extends StatelessWidget {
+class ConformationScreen extends StatelessWidget {
   final Assignment assignment;
 
-  const CheckoutScreen({super.key, required this.assignment});
+  const ConformationScreen({super.key, required this.assignment});
 
   Future<void> _cancelBooking(BuildContext context) async {
     final tentBox = Hive.box<Tent>(TENT_BOX);
@@ -44,7 +44,7 @@ class CheckoutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Checkout'),
+        title: const Text('Confirmation'),
         backgroundColor: const Color.fromARGB(255, 182, 182, 128),
       ),
       body: Padding(
@@ -69,7 +69,7 @@ class CheckoutScreen extends StatelessWidget {
                         name: 'Unknown',
                         phone: '',
                         date: '',
-                        packageName: '',
+                        //   packageName: '',
                         placeName: '',
                         packageType: 'Normal',
                         price: 0.0,

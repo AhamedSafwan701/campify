@@ -1,4 +1,4 @@
-import 'package:camify_travel_app/Screens/tentavailable.dart';
+import 'package:camify_travel_app/screens/tentavailable.dart';
 import 'package:camify_travel_app/model/client/booking_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';

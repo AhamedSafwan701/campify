@@ -1,5 +1,6 @@
-import 'package:camify_travel_app/Screens/home.dart';
-import 'package:camify_travel_app/Screens/login.dart';
+import 'package:camify_travel_app/screens/home.dart';
+import 'package:camify_travel_app/screens/login.dart';
+import 'package:camify_travel_app/home.dart';
 import 'package:camify_travel_app/model/login/password_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -43,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (user?.islogged ?? false) {
       Navigator.of(
         context,
-      ).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+      ).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen1()));
     } else
       Navigator.of(
         context,

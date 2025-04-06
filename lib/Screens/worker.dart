@@ -1,13 +1,13 @@
 import 'dart:io';
-import 'package:camify_travel_app/Screens/Listworker.dart';
-import 'package:camify_travel_app/Screens/worker_detail.dart';
+import 'package:camify_travel_app/screens/Listworker.dart';
+import 'package:camify_travel_app/screens/worker_detail.dart';
 import 'package:camify_travel_app/db_functions.dart/role_funtion.dart';
 import 'package:camify_travel_app/db_functions.dart/worker_delete_function.dart';
-import 'package:camify_travel_app/db_functions.dart/worker_availabilty_functions.dart'; // Added
+import 'package:camify_travel_app/db_functions.dart/worker_availabilty_functions.dart';
 import 'package:camify_travel_app/model/workers/create_work_model.dart';
 import 'package:camify_travel_app/model/workers/name_model.dart';
 import 'package:camify_travel_app/model/workers/role_model.dart';
-import 'package:camify_travel_app/model/awailability/worker_model.dart'; // Added
+import 'package:camify_travel_app/model/awailability/worker_model.dart';
 import 'package:camify_travel_app/widgets/custom_textfield.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -66,9 +66,8 @@ class _WorkerScreenState extends State<WorkerScreen> {
     });
     showModalBottomSheet(
       isScrollControlled: true,
-      backgroundColor: const Color(0xFFE5E6E1),
+      backgroundColor: Colors.transparent,
       context: ctx,
-      elevation: 5,
       builder: (_) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
@@ -100,38 +99,55 @@ class _WorkerScreenState extends State<WorkerScreen> {
             return Container(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(ctx).viewInsets.bottom,
-                top: 15,
-                left: 15,
-                right: 15,
+                top: 20,
+                left: 20,
+                right: 20,
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor, // Dynamic background
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(25),
+                ),
               ),
               child: SingleChildScrollView(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Center(
-                        child: GestureDetector(
-                          onTap: pickImage,
-                          child: CircleAvatar(
-                            radius: 40,
-                            backgroundImage:
-                                _imageFile != null
-                                    ? FileImage(_imageFile!)
-                                    : null,
-                            child:
-                                _imageFile == null
-                                    ? const Icon(
-                                      Icons.photo,
-                                      size: 40,
-                                      color: Colors.black,
-                                    )
-                                    : null,
-                          ),
+                      Text(
+                        'Add New Worker',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: pickImage,
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                          backgroundImage:
+                              _imageFile != null
+                                  ? FileImage(_imageFile!)
+                                  : null,
+                          child:
+                              _imageFile == null
+                                  ? Icon(
+                                    Icons.camera_alt,
+                                    size: 40,
+                                    color: Theme.of(
+                                      context,
+                                    ).iconTheme.color?.withOpacity(0.7),
+                                  )
+                                  : null,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       CustomTextfield(
                         hint: 'Name',
                         controller: _nameController,
@@ -143,13 +159,18 @@ class _WorkerScreenState extends State<WorkerScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 15),
                       ValueListenableBuilder(
                         valueListenable: roleNotifier,
                         builder: (context, List<Role> roles, _) {
                           return DropdownButtonFormField<String>(
                             value: _selectedRole,
-                            hint: const Text('Select Role'),
+                            hint: Text(
+                              'Select Role',
+                              style: TextStyle(
+                                color: Theme.of(context).hintColor,
+                              ),
+                            ),
                             items:
                                 roles.map((role) {
                                   return DropdownMenuItem<String>(
@@ -164,16 +185,20 @@ class _WorkerScreenState extends State<WorkerScreen> {
                             },
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(15),
                               ),
+                              filled: true,
+                              fillColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20,
+                                vertical: 15,
                               ),
                             ),
                           );
                         },
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 15),
                       CustomTextfield(
                         hint: 'Phone Number',
                         controller: _phoneNumberController,
@@ -186,7 +211,7 @@ class _WorkerScreenState extends State<WorkerScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 15),
                       CustomTextfield(
                         hint: 'Age',
                         controller: _ageController,
@@ -204,10 +229,13 @@ class _WorkerScreenState extends State<WorkerScreen> {
                       GestureDetector(
                         onTap: pickIdProof,
                         child: Container(
-                          height: 100,
-                          width: 100,
+                          height: 120,
+                          width: 120,
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
                             image:
                                 _idProofFile != null &&
                                         !_idProofFile!.path.endsWith('.pdf')
@@ -216,19 +244,34 @@ class _WorkerScreenState extends State<WorkerScreen> {
                                       fit: BoxFit.cover,
                                     )
                                     : null,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(
+                                  context,
+                                ).shadowColor.withOpacity(0.1),
+                                blurRadius: 5,
+                              ),
+                            ],
                           ),
                           child:
                               _idProofFile == null
-                                  ? const Icon(Icons.upload_file)
+                                  ? Icon(
+                                    Icons.upload_file,
+                                    size: 40,
+                                    color: Theme.of(
+                                      context,
+                                    ).iconTheme.color?.withOpacity(0.7),
+                                  )
                                   : _idProofFile!.path.endsWith('.pdf')
-                                  ? const Icon(
+                                  ? Icon(
                                     Icons.picture_as_pdf,
-                                    color: Colors.red,
+                                    size: 40,
+                                    color: Theme.of(context).primaryColor,
                                   )
                                   : null,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 25),
                       ElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate() &&
@@ -244,15 +287,11 @@ class _WorkerScreenState extends State<WorkerScreen> {
                               idProofPath: _idProofFile!.path,
                             );
                             await WorkerFunctions.addWorker(newWorker);
-                            // Sync with WorkerAvailable
                             await addWorker(
                               WorkerAvailable(
                                 workerId: workerId,
                                 name: _nameController.text,
                               ),
-                            );
-                            print(
-                              'Worker added ${newWorker.name} and synced to availability',
                             );
                             _nameController.clear();
                             _phoneNumberController.clear();
@@ -263,26 +302,47 @@ class _WorkerScreenState extends State<WorkerScreen> {
                             Navigator.of(ctx).pop();
                             _loadWorkers();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Worker added successfully'),
+                              SnackBar(
+                                content: const Text(
+                                  'Worker added successfully',
+                                ),
+                                backgroundColor: Colors.green,
                               ),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Please fill all required fields correctly',
+                              SnackBar(
+                                content: const Text(
+                                  'Please fill all required fields',
                                 ),
+                                backgroundColor: Colors.red,
                               ),
                             );
                           }
                         },
-                        child: const Text(
-                          'Add',
-                          style: TextStyle(color: Colors.black),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 15,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          elevation: 5,
+                        ),
+                        child: Text(
+                          'Add Worker',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context)
+                                .elevatedButtonTheme
+                                .style!
+                                .foregroundColor
+                                ?.resolve({}),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -295,12 +355,21 @@ class _WorkerScreenState extends State<WorkerScreen> {
   }
 
   void _showAddWorkDialog(BuildContext ctx) {
-    print('Opening Add Work dialog');
     showDialog(
       context: ctx,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Add Work'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Theme.of(context).cardColor, // Dynamic background
+          title: Text(
+            'Add Work',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.bodyMedium!.color,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -316,7 +385,7 @@ class _WorkerScreenState extends State<WorkerScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
               CustomTextfield(
                 hint: 'Description',
                 controller: _workDescriptionController,
@@ -326,7 +395,14 @@ class _WorkerScreenState extends State<WorkerScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium!.color?.withOpacity(0.7),
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -339,22 +415,31 @@ class _WorkerScreenState extends State<WorkerScreen> {
                     status: 'Pending',
                     assignedWorkerIndices: const [],
                   );
-                  print('Adding work: ${newWork.name}');
                   await WorkerFunctions.addmanagework(newWork);
-                  print('Work added to MANAGEBOX');
                   _workNameController.clear();
                   _workDescriptionController.clear();
                   Navigator.of(dialogContext).pop();
                   ScaffoldMessenger.of(ctx).showSnackBar(
-                    const SnackBar(content: Text('Work added successfully')),
+                    SnackBar(
+                      content: const Text('Work added successfully'),
+                      backgroundColor: Colors.green,
+                    ),
                   );
                 } else {
                   ScaffoldMessenger.of(ctx).showSnackBar(
-                    const SnackBar(content: Text('Please fill all fields')),
+                    SnackBar(
+                      content: const Text('Please fill all fields'),
+                      backgroundColor: Colors.red,
+                    ),
                   );
                 }
               },
-              child: const Text('Add'),
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Add', style: TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -366,64 +451,153 @@ class _WorkerScreenState extends State<WorkerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Workers',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 182, 182, 128),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
-        ),
+        backgroundColor:
+            Theme.of(
+              context,
+            ).appBarTheme.backgroundColor, // Dynamic AppBar color
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const WorkListScreen()),
-              );
-            },
-            icon: const Icon(Icons.work),
+          Tooltip(
+            message: 'View Work List',
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WorkListScreen(),
+                  ),
+                );
+              },
+              icon: Icon(
+                Icons.work,
+                color: Theme.of(context).appBarTheme.foregroundColor,
+              ),
+            ),
           ),
-          IconButton(
-            onPressed: () => _showAddWorkDialog(context),
-            icon: const Icon(Icons.add),
+          Tooltip(
+            message: 'Add New Work',
+            child: IconButton(
+              onPressed: () => _showAddWorkDialog(context),
+              icon: Icon(
+                Icons.add,
+                color: Theme.of(context).appBarTheme.foregroundColor,
+              ),
+            ),
           ),
         ],
       ),
       body:
           _workers.isEmpty
-              ? const Center(child: Text('No workers yet!'))
-              : ListView.builder(
-                itemCount: _workers.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: FileImage(
-                        File(_workers[index].imagePath),
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.people_outline,
+                      size: 80,
+                      color: Theme.of(
+                        context,
+                      ).iconTheme.color?.withOpacity(0.5),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'No Workers Yet!',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
                       ),
                     ),
-                    title: Text(_workers[index].name),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => WorkerDetailScreen(
-                                worker: _workers[index],
-                                index: index,
-                              ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Add a worker to get started.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium!.color?.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _workers.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    color: Theme.of(context).cardColor, // Dynamic card color
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        radius: 30,
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        backgroundImage: FileImage(
+                          File(_workers[index].imagePath),
                         ),
-                      ).then((_) => _loadWorkers());
-                    },
+                      ),
+                      title: Text(
+                        _workers[index].name,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
+                        ),
+                      ),
+                      subtitle: Text(
+                        _workers[index].role ?? 'No Role',
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium!.color?.withOpacity(0.7),
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        color: Theme.of(
+                          context,
+                        ).iconTheme.color?.withOpacity(0.5),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => WorkerDetailScreen(
+                                  worker: _workers[index],
+                                  index: index,
+                                ),
+                          ),
+                        ).then((_) => _loadWorkers());
+                      },
+                    ),
                   );
                 },
               ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF8D9851),
         onPressed: () => _showAddWorkerSheet(context),
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: Theme.of(context).primaryColor, // Dynamic FAB color
+        elevation: 8,
+        child: Icon(
+          Icons.add,
+          size: 30,
+          color: Theme.of(
+            context,
+          ).elevatedButtonTheme.style!.foregroundColor?.resolve({}),
+        ),
       ),
     );
   }

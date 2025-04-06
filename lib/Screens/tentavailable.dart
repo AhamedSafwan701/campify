@@ -1,4 +1,4 @@
-import 'package:camify_travel_app/Screens/workeravailable.dart';
+import 'package:camify_travel_app/screens/workeravailable.dart';
 import 'package:camify_travel_app/db_functions.dart/tent_functions.dart';
 import 'package:camify_travel_app/model/awailability/tent_model.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,6 @@ class TentavailableScreen extends StatelessWidget {
     required this.clientId,
   });
 
-  // Function to show dialog for adding a new tent
   void _showAddTentDialog(BuildContext context) {
     final TextEditingController tentNameController = TextEditingController();
     showDialog(

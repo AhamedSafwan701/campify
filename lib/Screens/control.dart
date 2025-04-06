@@ -1,10 +1,9 @@
-import 'package:camify_travel_app/Screens/addplace.dart';
-import 'package:camify_travel_app/Screens/bookedcustomers.dart';
-import 'package:camify_travel_app/Screens/booking_history.dart';
+import 'package:camify_travel_app/screens/addplace.dart';
+import 'package:camify_travel_app/screens/addrole.dart';
+import 'package:camify_travel_app/screens/bookedcustomers.dart';
+import 'package:camify_travel_app/screens/booking_history.dart';
 import 'package:flutter/material.dart';
-import 'package:camify_travel_app/Screens/role.dart';
-import 'package:camify_travel_app/Screens/settings.dart';
-import 'package:camify_travel_app/Screens/addpackage.dart';
+import 'package:camify_travel_app/screens/settings.dart';
 
 class HomeModel {
   final String title;
@@ -27,19 +26,19 @@ class Controller {
     HomeModel(
       title: 'Adding',
       icon: Icons.add_box,
-      destination: RoleScreen(),
+      destination: AddRollScreen(),
       selectedColor: Colors.blue.shade300,
       unselectedColor: Colors.grey.shade200,
     ),
+    // HomeModel(
+    //   title: 'Package Management',
+    //   icon: Icons.add_circle_rounded,
+    //   destination: AddPackageScreen(),
+    //   selectedColor: Colors.green.shade300,
+    //   unselectedColor: Colors.grey.shade200,
+    // ),
     HomeModel(
-      title: 'Package Management',
-      icon: Icons.add_circle_rounded,
-      destination: AddPackageScreen(),
-      selectedColor: Colors.green.shade300,
-      unselectedColor: Colors.grey.shade200,
-    ),
-    HomeModel(
-      title: 'Settings',
+      title: 'Place',
       icon: Icons.place,
       destination: AddPlaceScreen(),
       selectedColor: Colors.orange.shade300,
@@ -96,7 +95,7 @@ class _ControlScreenState extends State<ControlScreen> {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 182, 182, 128),
+        backgroundColor: Colors.grey[100],
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);

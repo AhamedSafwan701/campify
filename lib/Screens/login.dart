@@ -1,5 +1,5 @@
-import 'package:camify_travel_app/Screens/home.dart';
 import 'package:camify_travel_app/db_functions.dart/login_functions.dart';
+import 'package:camify_travel_app/home.dart';
 import 'package:camify_travel_app/model/login/password_model.dart';
 import 'package:flutter/material.dart';
 
@@ -115,9 +115,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 15),
                       TextFormField(
-                        controller:
-                            _confirmPasswordController, // Confirm password controller
-                        obscureText: true, // Hide text like password
+                        controller: _confirmPasswordController,
+                        obscureText: true,
                         decoration: InputDecoration(
                           hintText: 'Confirm Password',
                           prefixIcon: const Icon(Icons.lock_outline),
@@ -152,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               registerUser(user);
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                  builder: (context) => HomeScreen(),
+                                  builder: (context) => HomeScreen1(),
                                 ),
                               );
                             }

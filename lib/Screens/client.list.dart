@@ -128,8 +128,8 @@
 //   }
 // }
 import 'dart:io';
-import 'package:camify_travel_app/Screens/client.dart';
-import 'package:camify_travel_app/Screens/client_assignmet.dart';
+import 'package:camify_travel_app/screens/client.dart';
+import 'package:camify_travel_app/screens/client_assignmet.dart';
 import 'package:camify_travel_app/db_functions.dart/client_functions.dart';
 import 'package:camify_travel_app/model/client/booking_model.dart';
 import 'package:flutter/material.dart';

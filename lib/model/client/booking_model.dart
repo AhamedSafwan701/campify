@@ -12,16 +12,14 @@ class PackageClient {
   @HiveField(3)
   final String date;
   @HiveField(4)
-  final String packageName;
-  @HiveField(5)
   final String placeName;
-  @HiveField(6)
+  @HiveField(5)
   final String? imagePath;
-  @HiveField(7)
+  @HiveField(6)
   final String? idProofPath;
-  @HiveField(8)
+  @HiveField(7)
   final String? packageType;
-  @HiveField(9)
+  @HiveField(8)
   final double? price;
 
   PackageClient({
@@ -29,7 +27,6 @@ class PackageClient {
     required this.name,
     required this.phone,
     required this.date,
-    required this.packageName,
     required this.placeName,
     this.imagePath,
     this.idProofPath,

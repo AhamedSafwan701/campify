@@ -1,6 +1,5 @@
 import 'dart:developer';
-
-import 'package:camify_travel_app/Screens/checkout.dart';
+import 'package:camify_travel_app/screens/conformation.dart';
 import 'package:camify_travel_app/db_functions.dart/worker_availabilty_functions.dart';
 import 'package:camify_travel_app/db_functions.dart/assignment_functions.dart';
 import 'package:camify_travel_app/model/awailability/tent_model.dart';
@@ -33,31 +32,65 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Worker Availability'),
-        backgroundColor: const Color.fromARGB(255, 182, 182, 128),
+        title: Text(
+          'Worker Availability',
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        centerTitle: true,
       ),
       body: ValueListenableBuilder(
         valueListenable: workeravaileNotifier,
         builder: (context, List<WorkerAvailable> workers, _) {
           final availableWorkers = getAvailableWorkers(widget.selectedDate);
           if (availableWorkers.isEmpty) {
-            return const Center(child: Text('No workers available'));
+            return Center(
+              child: Text(
+                'No workers available',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                  fontSize: 16,
+                ),
+              ),
+            );
           }
           return ListView.builder(
             itemCount: availableWorkers.length,
             itemBuilder: (context, index) {
               final worker = availableWorkers[index];
-              return ListTile(
-                title: Text(worker.name),
-                subtitle: Text('ID: ${worker.workerId}'),
-                trailing: Radio<String>(
-                  value: worker.workerId,
-                  groupValue: _selectedWorkerId,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedWorkerId = value;
-                    });
-                  },
+              return Card(
+                color: Theme.of(context).cardColor,
+                elevation: 2,
+                margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: ListTile(
+                  title: Text(
+                    worker.name,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'ID: ${worker.workerId}',
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium!.color?.withOpacity(0.7),
+                    ),
+                  ),
+                  trailing: Radio<String>(
+                    value: worker.workerId,
+                    groupValue: _selectedWorkerId,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedWorkerId = value;
+                      });
+                    },
+                    activeColor: Theme.of(context).primaryColor,
+                  ),
                 ),
               );
             },
@@ -91,7 +124,8 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CheckoutScreen(assignment: assignment),
+                  builder:
+                      (context) => ConformationScreen(assignment: assignment),
                 ),
               );
             } catch (e) {
@@ -106,7 +140,13 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
             );
           }
         },
-        child: const Icon(Icons.arrow_forward),
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Icon(
+          Icons.arrow_forward,
+          color: Theme.of(
+            context,
+          ).elevatedButtonTheme.style!.foregroundColor?.resolve({}),
+        ),
       ),
     );
   }

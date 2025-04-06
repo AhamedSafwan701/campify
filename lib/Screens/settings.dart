@@ -1,5 +1,9 @@
-import 'package:camify_travel_app/Screens/login.dart';
+import 'package:camify_travel_app/screens/about_us.dart';
+import 'package:camify_travel_app/screens/login.dart';
+import 'package:camify_travel_app/screens/policy_privacy.dart';
+import 'package:camify_travel_app/screens/terms_condition.dart';
 import 'package:camify_travel_app/db_functions.dart/login_functions.dart';
+import 'package:camify_travel_app/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -12,13 +16,19 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Settings',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).appBarTheme.foregroundColor,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -30,7 +40,11 @@ class SettingsScreen extends StatelessWidget {
               child: Center(
                 child: Text(
                   'App Settings',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
+                  ),
                 ),
               ),
             ),
@@ -38,22 +52,49 @@ class SettingsScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(
+                      context,
+                    ).shadowColor.withOpacity(0.1), // Dynamic shadow
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
-                  SwitchListTile(
-                    title: Text('Notification'),
-                    secondary: Icon(Icons.notifications_active),
-                    value: true,
-                    onChanged: (bool value) {},
+                  ListTile(
+                    leading: Icon(
+                      Icons.shield_outlined,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                    title: Text('Privacy Policy'),
+                    trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PrivacyPolicyScreen(),
+                        ),
+                      );
+                    },
                   ),
-                  SwitchListTile(
-                    title: Text('Dark mode'),
-                    secondary: Icon(Icons.nightlight_round_rounded),
-                    value: true,
-                    onChanged: (bool value) {},
+                  ValueListenableBuilder<ThemeMode>(
+                    valueListenable: ThemeManager.themeNotifier,
+                    builder: (context, mode, child) {
+                      return SwitchListTile(
+                        title: const Text('Dark Mode'),
+                        secondary: const Icon(Icons.nightlight_round_rounded),
+                        value: mode == ThemeMode.dark,
+                        onChanged: (newValue) {
+                          ThemeManager.toggleTheme(newValue);
+                        },
+                        activeColor: Theme.of(context).primaryColor,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -61,34 +102,45 @@ class SettingsScreen extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               'Support & Info',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyMedium!.color,
+              ),
             ),
             SizedBox(height: 20),
             Container(
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
                 children: [
                   ListTile(
-                    leading: Icon(Icons.shield_outlined),
-                    title: Text('Privacy Policy'),
-                    trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
-                  ),
-                  ListTile(
                     leading: Icon(Icons.description_outlined),
                     title: Text("Terms of Service"),
                     trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TermsOfServiceScreen(),
+                        ),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: Icon(Icons.info_outline),
                     title: Text("About App"),
                     trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AboutUsScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

@@ -49,7 +49,7 @@ class ClientDetalisScreen extends StatelessWidget {
               _buildDetailRow('Phone', client.phone),
               _buildDetailRow('Date', client.date),
               _buildDetailRow('Place', client.placeName),
-              _buildDetailRow('Package', client.packageName),
+              //  _buildDetailRow('Package', client.packageName),
               _buildDetailRow(
                 'ID Proof',
                 client.idProofPath != null

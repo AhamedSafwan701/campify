@@ -8,6 +8,8 @@ import 'package:camify_travel_app/model/client/booking_model.dart';
 import 'package:camify_travel_app/widgets/custom_alertbox.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:camify_travel_app/screens/booking_history.dart';
 
 class BookedCustomerScreen extends StatelessWidget {
   const BookedCustomerScreen({super.key});
@@ -42,7 +44,7 @@ class BookedCustomerScreen extends StatelessWidget {
                     tentNotifier.notifyListeners();
                   }
                   final workerBox = Hive.box<WorkerAvailable>(
-                    WORKERAVAILABLE_BOX,
+                    'WORKERAVAILABLE_BOX',
                   );
                   final worker = workerBox.get(assignment.workerId);
                   if (worker != null && worker.bookedDates != null) {
@@ -65,12 +67,101 @@ class BookedCustomerScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _checkout(
+    BuildContext context,
+    Assignment assignment,
+    PackageClient client,
+  ) async {
+    try {
+      // 1. First get the existing assignment
+      final assignmentBox = Hive.box<Assignment>(ASSIGNMENT_BOX);
+
+      // 2. Create updated assignment with isCancelled = true for history
+      final updatedAssignment = Assignment(
+        clientId: assignment.clientId,
+        tentId: assignment.tentId,
+        workerId: assignment.workerId,
+        date: assignment.date,
+        isCancelled: true, // Mark as cancelled so it shows in history
+      );
+
+      // 3. Update the assignment in the box (this will move it to history)
+      await assignmentBox.put(assignment.clientId, updatedAssignment);
+
+      // 4. Free up the tent and worker availability
+      // Handle tent availability
+      final tentBox = Hive.box<Tent>(TENT_BOX);
+      final tent = tentBox.get(assignment.tentId);
+      if (tent != null && tent.bookedDates != null) {
+        tent.bookedDates!.remove(assignment.date);
+        await tentBox.put(assignment.tentId, tent);
+        tentNotifier.value = tentBox.values.toList();
+        tentNotifier.notifyListeners();
+      }
+
+      // Handle worker availability
+      final workerBox = Hive.box<WorkerAvailable>('WORKERAVAILABLE_BOX');
+      final worker = workerBox.get(assignment.workerId);
+      if (worker != null && worker.bookedDates != null) {
+        worker.bookedDates!.remove(assignment.date);
+        await workerBox.put(assignment.workerId, worker);
+        workeravaileNotifier.value = workerBox.values.toList();
+        workeravaileNotifier.notifyListeners();
+      }
+
+      // 5. Show checkout details and navigate
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text('Checkout Details'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Client: ${client.name} (ID: ${client.clientId})'),
+                  Text('Package Type: ${client.packageType ?? "Not Set"}'),
+                  Text('Price: ₹${client.price?.toStringAsFixed(2) ?? "0.00"}'),
+                  Text('Date: ${assignment.date}'),
+                  Text('Status: Checked Out'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Close the dialog
+                    Navigator.pop(context);
+
+                    // Go to history page and remove current page
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BookingHistoryScreen(),
+                      ),
+                    );
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+      );
+    } catch (e) {
+      // Handle any errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error during checkout: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Booked page',
+          'Booked Page',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -86,6 +177,12 @@ class BookedCustomerScreen extends StatelessWidget {
         valueListenable: Hive.box<Assignment>(ASSIGNMENT_BOX).listenable(),
         builder: (context, Box<Assignment> box, _) {
           final assignments = box.values.where((a) => !a.isCancelled).toList();
+          assignments.sort((a, b) {
+            final dateA = DateFormat('dd/MM/yyyy').parse(a.date);
+            final dateB = DateFormat('dd/MM/yyyy').parse(b.date);
+            return dateB.compareTo(dateA);
+          });
+
           if (assignments.isEmpty) {
             return const Center(child: Text('No Booking found'));
           }
@@ -93,6 +190,12 @@ class BookedCustomerScreen extends StatelessWidget {
             itemCount: assignments.length,
             itemBuilder: (context, index) {
               final assignment = assignments[index];
+              final currentDate = DateTime.now();
+              final bookingDate = DateFormat(
+                'dd/MM/yyyy',
+              ).parse(assignment.date);
+              final isPastDate = currentDate.isAfter(bookingDate);
+
               return Card(
                 margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Padding(
@@ -112,19 +215,47 @@ class BookedCustomerScreen extends StatelessWidget {
                                   name: 'Unknown',
                                   phone: '',
                                   date: '',
-                                  packageName: '',
                                   placeName: '',
                                   packageType: 'Normal',
                                   price: 0.0,
                                 ),
                           );
-                          return Text(
-                            'Client: ${client.name} (ID: ${client.clientId})',
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Client: ${client.name} (ID: ${client.clientId})',
+                              ),
+                              Text(
+                                'Package Type: ${client.packageType ?? "Not Set"}',
+                              ),
+                              Text(
+                                'Price: ₹${client.price?.toStringAsFixed(2) ?? "0.00"}',
+                              ),
+                              Text('Date: ${assignment.date}'),
+                              if (isPastDate) ...[
+                                const SizedBox(height: 8),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      _checkout(context, assignment, client);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green,
+                                    ),
+                                    child: Text(
+                                      'Checkout',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           );
                         },
                       ),
                       SizedBox(height: 8),
-
                       ValueListenableBuilder(
                         valueListenable:
                             Hive.box<Tent>('TENT_BOX').listenable(),
@@ -141,22 +272,13 @@ class BookedCustomerScreen extends StatelessWidget {
                             Hive.box<WorkerAvailable>(
                               'WORKERAVAILABLE_BOX',
                             ).listenable(),
-                        builder: (
-                          context,
-                          Box<WorkerAvailable> WORKERAVAILABLEBOX,
-                          _,
-                        ) {
-                          final worker = WORKERAVAILABLEBOX.get(
-                            assignment.workerId,
-                          );
+                        builder: (context, Box<WorkerAvailable> workerBox, _) {
+                          final worker = workerBox.get(assignment.workerId);
                           return Text(
                             'Worker: ${worker?.name ?? "Unknown"} (ID: ${assignment.workerId})',
                           );
                         },
                       ),
-
-                      const SizedBox(height: 8),
-                      Text('Date: ${assignment.date}'),
                       const SizedBox(height: 8),
                       Align(
                         alignment: Alignment.centerRight,
