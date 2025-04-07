@@ -37,9 +37,14 @@ class _WorkListScreenState extends State<WorkListScreen>
     print(
       'Opening dialog for work: ${work.name}, Workers available: ${workers.length}',
     );
+
     showDialog(
       context: context,
       builder: (dialogContext) {
+        List<int> localAssignedIndices = List<int>.from(
+          work.assignedWorkerIndices,
+        );
+
         return CustomAlertbox(
           title: 'Assign Workers',
           content: StatefulBuilder(
@@ -48,40 +53,42 @@ class _WorkListScreenState extends State<WorkListScreen>
                 mainAxisSize: MainAxisSize.min,
                 children:
                     workers.map((worker) {
-                      final isAssigned = work.assignedWorkerIndices.contains(
-                        workers.indexOf(worker),
+                      final workerIndex = workers.indexOf(worker);
+                      final isAssigned = localAssignedIndices.contains(
+                        workerIndex,
                       );
+
                       return CheckboxListTile(
-                        title: Text(worker.name),
+                        title: Text(worker.nameWorker),
                         value: isAssigned,
                         onChanged: (value) async {
-                          final updatedIndices = List<int>.from(
-                            work.assignedWorkerIndices,
-                          );
-                          final workerIndex = workers.indexOf(worker);
                           if (value == true &&
-                              !updatedIndices.contains(workerIndex)) {
-                            updatedIndices.add(workerIndex);
+                              !localAssignedIndices.contains(workerIndex)) {
+                            localAssignedIndices.add(workerIndex);
                           } else if (value == false) {
-                            updatedIndices.remove(workerIndex);
+                            localAssignedIndices.remove(workerIndex);
                           }
+
                           final updatedWork = Manage(
                             id: work.id,
                             name: work.name,
                             description: work.description,
                             status: work.status,
-                            assignedWorkerIndices: updatedIndices,
+                            assignedWorkerIndices: localAssignedIndices,
                           );
+
                           await WorkerFunctions.updatemanagework(
                             workIndex,
                             updatedWork,
                           );
-                          setState(() {});
+
                           setStateDialog(() {});
+                          setState(() {});
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                '${worker.name} ${value == true ? "assigned" : "unassigned"}',
+                                '${worker.nameWorker} ${value == true ? "assigned" : "unassigned"}',
                               ),
                             ),
                           );
@@ -104,6 +111,30 @@ class _WorkListScreenState extends State<WorkListScreen>
 
   void _markAsCompleted(int workIndex) {
     final work = WorkerFunctions.getManageWork()[workIndex];
+
+    // Check if no workers are assigned
+    if (work.assignedWorkerIndices.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return CustomAlertbox(
+            title: 'Error',
+            content: Text(
+              'Cannot mark "${work.name}" as completed. No workers assigned.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return; // Exit function if no workers assigned
+    }
+
+    // Proceed if workers are assigned
     showDialog(
       context: context,
       builder: (dialogContext) {
@@ -246,6 +277,7 @@ class _WorkListScreenState extends State<WorkListScreen>
           print(
             'Total works: ${works.length}, Pending: ${filteredPendingWorks.length}, Completed: ${filteredCompletedWorks.length}',
           );
+
           return TabBarView(
             controller: _tabController,
             children: [
@@ -258,7 +290,7 @@ class _WorkListScreenState extends State<WorkListScreen>
                       final allWorkers = WorkerFunctions.getAllWorkers();
                       final validAssignedWorkers = work.assignedWorkerIndices
                           .where((i) => i >= 0 && i < allWorkers.length)
-                          .map((i) => allWorkers[i].name)
+                          .map((i) => allWorkers[i].nameWorker)
                           .join(', ');
                       return ListTile(
                         title: Text(work.name),
@@ -302,7 +334,7 @@ class _WorkListScreenState extends State<WorkListScreen>
                       final allWorkers = WorkerFunctions.getAllWorkers();
                       final validAssignedWorkers = work.assignedWorkerIndices
                           .where((i) => i >= 0 && i < allWorkers.length)
-                          .map((i) => allWorkers[i].name)
+                          .map((i) => allWorkers[i].nameWorker)
                           .join(', ');
                       return ListTile(
                         title: Text(work.name),

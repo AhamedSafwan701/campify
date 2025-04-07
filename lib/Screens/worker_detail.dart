@@ -31,7 +31,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.worker.name);
+    _nameController = TextEditingController(text: widget.worker.nameWorker);
     _phoneNumberController = TextEditingController(
       text: widget.worker.phoneNumber,
     );
@@ -220,7 +220,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                               if (_nameController.text.isNotEmpty &&
                                   _imageFile != null) {
                                 final updateWorker = Worker(
-                                  name: _nameController.text,
+                                  nameWorker: _nameController.text,
                                   role: widget.worker.role,
                                   phoneNumber:
                                       _phoneNumberController.text.isNotEmpty
@@ -238,7 +238,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                                   updateWorker,
                                 );
                                 debugPrint(
-                                  'Worker updated: ${updateWorker.name}',
+                                  'Worker updated: ${updateWorker.nameWorker}',
                                 );
                                 Navigator.of(ctx).pop();
                                 setState(() {});
@@ -303,7 +303,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
         return CustomAlertbox(
           title: 'Delete Worker',
           content: Text(
-            'Are you sure you want to delete ${widget.worker.name}?',
+            'Are you sure you want to delete ${widget.worker.nameWorker}?',
             style: TextStyle(
               color: Theme.of(context).textTheme.bodyMedium!.color,
             ),
@@ -324,7 +324,7 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
             ElevatedButton(
               onPressed: () async {
                 await WorkerFunctions.deleteWorker(widget.index);
-                debugPrint('Worker deleted: ${widget.worker.name}');
+                debugPrint('Worker deleted: ${widget.worker.nameWorker}');
                 Navigator.of(ctx).pop();
                 Navigator.of(context).pop(true);
                 ScaffoldMessenger.of(context).showSnackBar(

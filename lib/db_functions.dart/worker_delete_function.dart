@@ -9,13 +9,15 @@ class WorkerFunctions {
   static Future<void> addWorker(Worker worker) async {
     final box = Hive.box<Worker>(WORKERS_BOX);
     await box.add(worker);
-    print('Worker added to WORKERSBOX: ${worker.name}, Total: ${box.length}');
+    print(
+      'Worker added to WORKERSBOX: ${worker.nameWorker}, Total: ${box.length}',
+    );
   }
 
   static Future<void> updateWorker(int index, Worker worker) async {
     final box = Hive.box<Worker>(WORKERS_BOX);
     await box.putAt(index, worker);
-    print('Worker updated at index $index: ${worker.name}');
+    print('Worker updated at index $index: ${worker.nameWorker}');
   }
 
   static Future<void> deleteWorker(int index) async {

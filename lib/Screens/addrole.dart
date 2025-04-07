@@ -79,7 +79,7 @@ class _AddRollScreenState extends State<AddRollScreen> {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 182, 182, 128),
+        backgroundColor: Colors.grey[100],
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);

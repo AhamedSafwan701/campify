@@ -4,7 +4,7 @@ part 'name_model.g.dart';
 @HiveType(typeId: 2)
 class Worker {
   @HiveField(0)
-  final String name;
+  final String nameWorker;
 
   @HiveField(1)
   final String? role;
@@ -22,7 +22,7 @@ class Worker {
   final String? idProofPath;
 
   Worker({
-    required this.name,
+    required this.nameWorker,
     this.role,
     this.phoneNumber,
     required this.imagePath,

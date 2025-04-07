@@ -63,7 +63,7 @@ class TentavailableScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tent Availability'),
-        backgroundColor: const Color.fromARGB(255, 182, 182, 128),
+        backgroundColor: Colors.grey[100],
       ),
       body: ValueListenableBuilder(
         valueListenable: tentNotifier,

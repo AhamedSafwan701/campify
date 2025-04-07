@@ -43,7 +43,7 @@ class BookingHistoryScreen extends StatelessWidget {
         return true;
       }
     }
-    return true; // iOS or other platforms
+    return true;
   }
 
   Future<void> _downloadBookingHistory(BuildContext context) async {
@@ -122,6 +122,9 @@ class BookingHistoryScreen extends StatelessWidget {
         return;
       }
 
+      final clientBox = Hive.box<PackageClient>('CLIENT_BOX');
+      final workerBox = Hive.box<WorkerAvailable>('WORKERAVAILABLE_BOX');
+
       final pdf = pw.Document();
       pdf.addPage(
         pw.Page(
@@ -143,18 +146,45 @@ class BookingHistoryScreen extends StatelessWidget {
                   ),
                   pw.SizedBox(height: 20),
                   pw.Table.fromTextArray(
-                    headers: ['Date', 'Client ID', 'Tent ID', 'Worker ID'],
+                    headers: [
+                      'Date',
+                      'Client Name (ID)',
+                      'Tent ID',
+                      'Worker Name (ID)',
+                    ],
                     data:
-                        monthlyAssignments
-                            .map(
-                              (assignment) => [
-                                assignment.date,
-                                assignment.clientId,
-                                assignment.tentId,
-                                assignment.workerId,
-                              ],
-                            )
-                            .toList(),
+                        monthlyAssignments.map((assignment) {
+                          final client = clientBox.values.firstWhere(
+                            (c) => c.clientId == assignment.clientId,
+                            orElse:
+                                () => PackageClient(
+                                  clientId: assignment.clientId,
+                                  name: 'Unknown',
+                                  phone: '',
+                                  date: '',
+                                  placeName: '',
+                                  imagePath: null,
+                                  idProofPath: null,
+                                  packageType: 'Not Set',
+                                  price: 0.0,
+                                ),
+                          );
+                          final worker =
+                              workerBox.get(assignment.workerId) ??
+                              WorkerAvailable(
+                                workerId: assignment.workerId,
+                                name: 'Unknown',
+                                bookedDates:
+                                    null, // Match WorkerAvailable fields
+                              );
+
+                          return [
+                            assignment.date,
+                            '${client.name} (${assignment.clientId})',
+                            assignment.tentId,
+                            '${worker.name} (${assignment.workerId})',
+                          ];
+                        }).toList(),
                   ),
                 ],
               ),

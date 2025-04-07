@@ -279,7 +279,7 @@ class _WorkerScreenState extends State<WorkerScreen> {
                               _idProofFile != null) {
                             final workerId = generateId();
                             final newWorker = Worker(
-                              name: _nameController.text,
+                              nameWorker: _nameController.text,
                               role: _selectedRole,
                               phoneNumber: _phoneNumberController.text,
                               age: int.parse(_ageController.text),
@@ -550,7 +550,7 @@ class _WorkerScreenState extends State<WorkerScreen> {
                         ),
                       ),
                       title: Text(
-                        _workers[index].name,
+                        _workers[index].nameWorker,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

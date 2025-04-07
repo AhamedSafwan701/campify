@@ -67,10 +67,16 @@ import 'package:camify_travel_app/theme/theme_manager.dart';
 import 'package:camify_travel_app/theme/themes._color.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(WorkerAdapter());
@@ -91,44 +97,6 @@ Future<void> main() async {
   await Hive.openBox<WorkerAvailable>('WORKERAVAILABLE_BOX');
   await Hive.openBox<Assignment>('ASSIGNMENT_BOX');
   await Hive.openBox<Tent>('TENT_BOX');
-  // Add sample data
-  // final tentBox = Hive.box<Tent>(TENT_BOX);
-  // if (tentBox.isEmpty) {
-  //   await addTent(Tent(tentId: 'T1', name: 'Tent 1'));
-  //   await addTent(Tent(tentId: 'T2', name: 'Tent 2'));
-  //   print('Sample tents added: ${tentBox.values.toList()}');
-  // }
-
-  // final workerBox = Hive.box<WorkerAvailable>(WORKER_BOX);
-  // final workersBox = Hive.box<Worker>(WORKERS_BOX);
-  // if (workerBox.isEmpty && workersBox.isEmpty) {
-  //   await addWorker(WorkerAvailable(workerId: 'W1', name: 'Worker 1'));
-  //   await workersBox.put(
-  //     'W1',
-  //     Worker(
-  //       name: 'Worker 1',
-  //       role: 'General',
-  //       phoneNumber: '1234567890',
-  //       age: 25,
-  //       imagePath: '',
-  //       idProofPath: '',
-  //     ),
-  //   );
-
-  //   await addWorker(WorkerAvailable(workerId: 'W2', name: 'Worker 2'));
-  //   await workersBox.put(
-  //     'W2',
-  //     Worker(
-  //       name: 'Worker 2',
-  //       role: 'General',
-  //       phoneNumber: '0987654321',
-  //       age: 30,
-  //       imagePath: '',
-  //       idProofPath: '',
-  //     ),
-  //   );
-  //   print('Sample workers added: ${workerBox.values.toList()}');
-  // }
 
   runApp(MyApp());
 }

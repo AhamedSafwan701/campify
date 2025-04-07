@@ -73,23 +73,19 @@ class BookedCustomerScreen extends StatelessWidget {
     PackageClient client,
   ) async {
     try {
-      // 1. First get the existing assignment
       final assignmentBox = Hive.box<Assignment>(ASSIGNMENT_BOX);
-
-      // 2. Create updated assignment with isCancelled = true for history
       final updatedAssignment = Assignment(
         clientId: assignment.clientId,
         tentId: assignment.tentId,
         workerId: assignment.workerId,
         date: assignment.date,
-        isCancelled: true, // Mark as cancelled so it shows in history
+        isCancelled: true,
+      );
+      await assignmentBox.put(
+        '${assignment.clientId}_${assignment.date}',
+        updatedAssignment,
       );
 
-      // 3. Update the assignment in the box (this will move it to history)
-      await assignmentBox.put(assignment.clientId, updatedAssignment);
-
-      // 4. Free up the tent and worker availability
-      // Handle tent availability
       final tentBox = Hive.box<Tent>(TENT_BOX);
       final tent = tentBox.get(assignment.tentId);
       if (tent != null && tent.bookedDates != null) {
@@ -99,7 +95,6 @@ class BookedCustomerScreen extends StatelessWidget {
         tentNotifier.notifyListeners();
       }
 
-      // Handle worker availability
       final workerBox = Hive.box<WorkerAvailable>('WORKERAVAILABLE_BOX');
       final worker = workerBox.get(assignment.workerId);
       if (worker != null && worker.bookedDates != null) {
@@ -109,7 +104,6 @@ class BookedCustomerScreen extends StatelessWidget {
         workeravaileNotifier.notifyListeners();
       }
 
-      // 5. Show checkout details and navigate
       showDialog(
         context: context,
         builder:
@@ -129,10 +123,7 @@ class BookedCustomerScreen extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () {
-                    // Close the dialog
                     Navigator.pop(context);
-
-                    // Go to history page and remove current page
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -146,7 +137,6 @@ class BookedCustomerScreen extends StatelessWidget {
             ),
       );
     } catch (e) {
-      // Handle any errors
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error during checkout: $e'),
@@ -165,7 +155,7 @@ class BookedCustomerScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 182, 182, 128),
+        backgroundColor: Colors.grey[100],
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -280,20 +270,22 @@ class BookedCustomerScreen extends StatelessWidget {
                         },
                       ),
                       const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            _cancelbooking(context, assignment);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              _cancelbooking(context, assignment);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                            child: Text(
+                              'Cancel Booking',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
-                          child: Text(
-                            'Cancel Booking',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),

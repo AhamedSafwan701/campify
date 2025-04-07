@@ -17,7 +17,7 @@ class WorkerAdapter extends TypeAdapter<Worker> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Worker(
-      name: fields[0] as String,
+      nameWorker: fields[0] as String,
       role: fields[1] as String?,
       phoneNumber: fields[2] as String?,
       imagePath: fields[3] as String,
@@ -31,7 +31,7 @@ class WorkerAdapter extends TypeAdapter<Worker> {
     writer
       ..writeByte(6)
       ..writeByte(0)
-      ..write(obj.name)
+      ..write(obj.nameWorker)
       ..writeByte(1)
       ..write(obj.role)
       ..writeByte(2)

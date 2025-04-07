@@ -8,14 +8,23 @@ class AboutUsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'About App',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            color:
+                Theme.of(context).appBarTheme.foregroundColor ?? Colors.black,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.grey[100],
+        backgroundColor:
+            Theme.of(context).appBarTheme.backgroundColor ?? Colors.grey[100],
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color:
+                Theme.of(context).appBarTheme.foregroundColor ?? Colors.black,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         elevation: 0,
@@ -24,7 +33,7 @@ class AboutUsScreen extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              color: Colors.grey[200],
+              color: Theme.of(context).cardColor,
               padding: const EdgeInsets.symmetric(vertical: 24),
               width: double.infinity,
               child: Column(
@@ -33,23 +42,32 @@ class AboutUsScreen extends StatelessWidget {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.grid_view,
-                      color: Color(0xFF345995),
+                      color: Theme.of(context).primaryColor,
                       size: 30,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'Camify',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.titleLarge?.color,
+                    ),
                   ),
-                  const Text(
+                  Text(
                     'Streamlining Tent Rental Management',
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                    ),
                   ),
                 ],
               ),
@@ -57,18 +75,24 @@ class AboutUsScreen extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              color: Colors.grey[100],
+              color: Theme.of(context).scaffoldBackgroundColor,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     'Camify is a powerful management tool designed specifically for tent rental business owners. We simplify the process of managing clients, workers, and inventory, making it easier than ever to run your business efficiently.',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'Our mission is to empower tent rental businesses with modern tools that streamline operations and drive growth.',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
                 ],
               ),
@@ -76,9 +100,13 @@ class AboutUsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               width: double.infinity,
-              child: const Text(
+              child: Text(
                 'Key Features',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.titleMedium?.color,
+                ),
               ),
             ),
             Padding(
@@ -89,21 +117,21 @@ class AboutUsScreen extends StatelessWidget {
                     icon: Icons.description,
                     title: 'Client Bookings',
                     subtitle: 'Track and organize reservations',
-                    color: Colors.blue,
+                    color: Theme.of(context).primaryColor,
                   ),
                   const SizedBox(height: 16),
                   _buildFeatureItem(
                     icon: Icons.people,
                     title: 'Worker Management',
                     subtitle: 'Assign tasks efficiently',
-                    color: Colors.blue,
+                    color: Theme.of(context).primaryColor,
                   ),
                   const SizedBox(height: 16),
                   _buildFeatureItem(
                     icon: Icons.add_box,
                     title: 'Add Items',
                     subtitle: 'Update inventory',
-                    color: Colors.blue,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ],
               ),
@@ -113,33 +141,55 @@ class AboutUsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  const Text(
+                  Text(
                     'support@camify.com',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     '123 Business Street, Suite 100',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
-                  const Text(
+                  Text(
                     'San Francisco, CA 94107',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     '+1 (555) 123-4567',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'Version 1.0',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '© 2024 Camify. All rights reserved.',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                    ),
                   ),
                 ],
               ),
@@ -175,15 +225,19 @@ class AboutUsScreen extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  //    color: Theme.of(context).textTheme.titleMedium?.color,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                style: TextStyle(
+                  fontSize: 14,
+                  //  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                ),
               ),
             ],
           ),
